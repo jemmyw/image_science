@@ -7,6 +7,7 @@ task :compile do
   `ruby ext/image_science/extconf.rb`
   `make`
   `mv extension.so lib/image_science/extension.so`
+  `mv extension.bundle lib/image_science/extension.bundle`
 end
 
 task :chmod do

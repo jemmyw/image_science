@@ -82,6 +82,20 @@ class TestImageScience < MiniTest::Unit::TestCase
     end
   end
 
+  def test_bytes
+    data = File.new(@path).binmode.read
+
+    ImageScience.with_image_from_memory data do |img|
+      File.open(@tmppath, "wb"){|f| f.write img.bytes}
+      assert File.size(@tmppath) > 1100
+
+      ImageScience.with_image(@tmppath) do |img2|
+        assert_equal(img2.width, img.width)
+        assert_equal(img2.height, img.height)
+      end
+    end
+  end
+
   def test_resize
     ImageScience.with_image @path do |img|
       img.resize(25, 25) do |thumb|

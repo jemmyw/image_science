@@ -4,3 +4,6 @@ pkg/*
 mkmf.log
 Makefile
 *.so
+*.o
+*.bundle
+Gemfile.lock

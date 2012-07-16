@@ -195,6 +195,42 @@ static VALUE save(VALUE self, VALUE _output) {
   rb_raise(rb_eTypeError, "Unknown file format");
 }
 
+static VALUE bytes(VALUE self) {
+	FIMEMORY *hmem = NULL;
+	FIBITMAP *bitmap;
+	VALUE byte_string;
+	int flags;
+
+	FREE_IMAGE_FORMAT fif = FIX2INT(rb_iv_get(self, "@file_type"));
+
+	if ((fif != FIF_UNKNOWN) && FreeImage_FIFSupportsWriting(fif)) {
+		GET_BITMAP(bitmap);
+		flags = fif == FIF_JPEG ? JPEG_QUALITYGOOD : 0;
+		BOOL result = 0, unload = 0;
+
+		if (fif == FIF_PNG) FreeImage_DestroyICCProfile(bitmap);
+		if (fif == FIF_JPEG && FreeImage_GetBPP(bitmap) != 24)
+			bitmap = FreeImage_ConvertTo24Bits(bitmap), unload = 1;
+
+		// open and allocate a memory stream
+		hmem = FreeImage_OpenMemory(0, 0);
+		// save the image to a memory stream
+		result = FreeImage_SaveToMemory(fif, bitmap, hmem, flags);
+
+		if (unload) FreeImage_Unload(bitmap);
+
+		// get the buffer from the memory stream
+		BYTE *mem_buffer = NULL;
+		DWORD size_in_bytes = 0;
+		FreeImage_AcquireMemory(hmem, &mem_buffer, &size_in_bytes);
+		byte_string = rb_str_new((char *)mem_buffer, size_in_bytes);
+		FreeImage_CloseMemory(hmem);
+
+		return byte_string;
+	}
+
+	return Qnil;
+}
 
 
 #ifdef __cplusplus
@@ -207,6 +243,7 @@ extern "C" {
     rb_define_method(c, "height", (VALUE(*)(ANYARGS))height, 0);
     rb_define_method(c, "resize", (VALUE(*)(ANYARGS))resize, 2);
     rb_define_method(c, "save", (VALUE(*)(ANYARGS))save, 1);
+		rb_define_method(c, "bytes", (VALUE(*)(ANYARGS))bytes, 0);
     rb_define_method(c, "width", (VALUE(*)(ANYARGS))width, 0);
     rb_define_method(c, "with_crop", (VALUE(*)(ANYARGS))with_crop, 4);
     rb_define_singleton_method(c, "with_image", (VALUE(*)(ANYARGS))with_image, 1);
