@@ -2,12 +2,12 @@ $:.push File.expand_path("../lib", __FILE__)
 require "image_science/version"
 
 Gem::Specification.new do |s|
-  s.name = "image_science"
+  s.name = "jemmyw-image_science"
   s.version = ImageScience::VERSION
   s.platform = Gem::Platform::RUBY
   s.authors = ['Ryan Davis', 'Craig Buchek']
   s.email = ['craig.buchek@asolutions.com']
-  s.homepage = "http://github.com/asynchrony/#{s.name}"
+  s.homepage = "http://github.com/jemmyw/image_science"
   s.summary = %q{Replacement for RMagick; uses FreeImage instead of ImageMagick}
   s.description = %q{ImageScience is a clean and happy Ruby library that generates
 thumbnails -- and kicks the living crap out of RMagick. Oh, and it
