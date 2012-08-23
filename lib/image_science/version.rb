@@ -1,3 +1,3 @@
 class ImageScience
-  VERSION = '1.3.2.1.Jemmyw'
+  VERSION = '1.3.3.0.Jemmyw'
 end

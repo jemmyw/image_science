@@ -195,13 +195,22 @@ static VALUE save(VALUE self, VALUE _output) {
   rb_raise(rb_eTypeError, "Unknown file format");
 }
 
-static VALUE bytes(VALUE self) {
+static VALUE bytes(int argc, VALUE *argv, VALUE self) {
 	FIMEMORY *hmem = NULL;
 	FIBITMAP *bitmap;
 	VALUE byte_string;
+	VALUE type_string;
 	int flags;
+	FREE_IMAGE_FORMAT fif;
 
-	FREE_IMAGE_FORMAT fif = FIX2INT(rb_iv_get(self, "@file_type"));
+	rb_scan_args(argc, argv, "01", &type_string);
+
+	if (NIL_P(type_string)) {
+		fif = FIX2INT(rb_iv_get(self, "@file_type"));
+	} else {
+		char * type = StringValuePtr(type_string);
+		fif = FreeImage_GetFIFFromFilename(type);
+	}
 
 	if ((fif != FIF_UNKNOWN) && FreeImage_FIFSupportsWriting(fif)) {
 		GET_BITMAP(bitmap);
@@ -243,7 +252,7 @@ extern "C" {
     rb_define_method(c, "height", (VALUE(*)(ANYARGS))height, 0);
     rb_define_method(c, "resize", (VALUE(*)(ANYARGS))resize, 2);
     rb_define_method(c, "save", (VALUE(*)(ANYARGS))save, 1);
-		rb_define_method(c, "bytes", (VALUE(*)(ANYARGS))bytes, 0);
+		rb_define_method(c, "bytes", (VALUE(*)(ANYARGS))bytes, -1);
     rb_define_method(c, "width", (VALUE(*)(ANYARGS))width, 0);
     rb_define_method(c, "with_crop", (VALUE(*)(ANYARGS))with_crop, 4);
     rb_define_singleton_method(c, "with_image", (VALUE(*)(ANYARGS))with_image, 1);

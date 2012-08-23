@@ -48,7 +48,7 @@ class TestImageScience < MiniTest::Unit::TestCase
   end
 
   def test_class_with_image_missing_with_img_extension
-    assert_raises RuntimeError do
+    assert_raises TypeError do
       assert_nil ImageScience.with_image("nope#{@path}") do |img|
         flunk
       end
@@ -89,6 +89,21 @@ class TestImageScience < MiniTest::Unit::TestCase
       File.open(@tmppath, "wb"){|f| f.write img.bytes}
       assert File.size(@tmppath) > 1100
 
+      ImageScience.with_image(@tmppath) do |img2|
+        assert_equal(img2.width, img.width)
+        assert_equal(img2.height, img.height)
+      end
+    end
+  end
+
+  def test_bytes_with_type
+    data = File.new(@path).binmode.read
+    @tmppath = "test/pix-tmp.jpg"
+
+    ImageScience.with_image_from_memory data do |img|
+      File.open(@tmppath, "wb"){|f| f.write img.bytes("jpeg")}
+      assert_equal 1256, File.size(@tmppath)
+      
       ImageScience.with_image(@tmppath) do |img2|
         assert_equal(img2.width, img.width)
         assert_equal(img2.height, img.height)

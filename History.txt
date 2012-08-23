@@ -1,3 +1,15 @@
+=== 1.3.3.0.Jemmyw
+
+* 1 enhancement:
+
+  * bytes method takes type string for image conversion.
+
+=== 1.3.2.1.Jemmyw
+
+* 1 enhancement:
+
+  * Added bytes method to get the image data as a ruby string.
+
 === 1.2.1 / 2009-08-14
 
 * 2 minor enhancements:

@@ -6,11 +6,19 @@ task :build => [:compile, :chmod]
 task :compile do
   `ruby ext/image_science/extconf.rb`
   `make`
-  `mv extension.so lib/image_science/extension.so`
-  `mv extension.bundle lib/image_science/extension.bundle`
+
+  if File.exists?("extension.so")
+    `mv extension.so lib/image_science/extension.so`
+  elsif File.exists?("extension.bundle")
+    `mv extension.bundle lib/image_science/extension.bundle`
+  else
+    raise "No extension file build"
+  end
 end
 
 task :chmod do
-  File.chmod(0775, 'lib/image_science/extension.so')
+  Dir["lib/image_science/extension.{so,bundle}"].each do |file|
+    File.chmod(0775, file)
+  end
 end
 
